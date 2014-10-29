@@ -352,6 +352,7 @@ def retrieveFromUrlWaiting(request,
     """
     for i in range(wait_max):
         try:
+            print "Opening URL "+request.get_full_url()
             f = urllib2.urlopen(request)
             text = f.read()
             f.close()
@@ -367,6 +368,14 @@ def retrieveFromUrlWaiting(request,
                     time.sleep(wait_default)
                 else:
                     time.sleep(retryAfter)
+            if e.code == 404:
+                text = e.read()
+                print "Caught 404 error. Text is: "+text[:200]+"..."
+                # Some OAI servers give a 404 error instead of 200 with the OAI error noRecordsMatch
+                if not '<OAI-PMH' in text:
+                    raise e
+                else:
+                    return text
             else:
                 # reraise any other HTTP error
                 raise
