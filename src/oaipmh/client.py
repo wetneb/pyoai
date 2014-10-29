@@ -13,8 +13,8 @@ import codecs
 from oaipmh import common, metadata, validation, error
 from oaipmh.datestamp import datestamp_to_datetime, datetime_to_datestamp
 
-WAIT_DEFAULT = 120 # two minutes
-WAIT_MAX = 5
+WAIT_DEFAULT = 240 # four minutes
+WAIT_MAX = 64
 
 class Error(Exception):
     pass
