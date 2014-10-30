@@ -344,6 +344,8 @@ def ResumptionListGenerator(firstBatch, nextBatch):
             itemFound = True
         if token is None or not itemFound:
             break
+        else:
+            print "Next token: "+token
         result, token = nextBatch(token)
 
 def retrieveFromUrlWaiting(request,
@@ -368,7 +370,7 @@ def retrieveFromUrlWaiting(request,
                     time.sleep(wait_default)
                 else:
                     time.sleep(retryAfter)
-            if e.code == 404:
+            elif e.code == 404:
                 text = e.read()
                 print "Caught 404 error. Text is: "+text[:200]+"..."
                 # Some OAI servers give a 404 error instead of 200 with the OAI error noRecordsMatch
