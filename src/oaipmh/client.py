@@ -59,11 +59,16 @@ class BaseClient(common.OAIPMH):
         elif 'until' in kw:
             # until is None but is explicitly in kw, remove it
             del kw['until']
+
+        sent_kw = kw
+        if 'resumptionToken' in kw:
+            sent_kw = dict()
+            sent_kw['resumptionToken'] = kw['resumptionToken']
         
         # now call underlying implementation
         method_name = verb + '_impl'
         return getattr(self, method_name)(
-            kw, self.makeRequestErrorHandling(verb=verb, **kw))    
+            kw, self.makeRequestErrorHandling(verb=verb, **sent_kw))    
 
     def getNamespaces(self):
         """Get OAI namespaces.
@@ -170,13 +175,15 @@ class BaseClient(common.OAIPMH):
 
     def ListRecords_impl(self, args, tree):
         namespaces = self.getNamespaces()
-        metadata_prefix = args['metadataPrefix']
         metadata_registry = self._metadata_registry
+        metadata_prefix = args['metadataPrefix']
         def firstBatch():
+            print "firstbatch"
             return self.buildRecords(
                 metadata_prefix, namespaces,
                 metadata_registry, tree)
         def nextBatch(token):
+            print "nextbatch"
             tree = self.makeRequestErrorHandling(
                 verb='ListRecords',
                 resumptionToken=token)
@@ -355,6 +362,7 @@ def retrieveFromUrlWaiting(request,
     for i in range(wait_max):
         try:
             print "Opening URL "+request.get_full_url()
+            print "Parameters: "+request.data
             f = urllib2.urlopen(request)
             text = f.read()
             f.close()
@@ -366,6 +374,7 @@ def retrieveFromUrlWaiting(request,
                     retryAfter = int(e.hdrs.get('Retry-After'))
                 except TypeError:
                     retryAfter = None
+                print "Caught 503 error. Retry after: "+str(retryAfter)
                 if retryAfter is None:
                     time.sleep(wait_default)
                 else:
