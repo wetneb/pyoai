@@ -311,6 +311,7 @@ class Client(BaseClient):
         BaseClient.__init__(self, metadata_registry)
         self._base_url = base_url
         self._local_file = local_file
+        self.get_method = False
         if credentials is not None:
             self._credentials = base64.encodestring('%s:%s' % credentials)
         else:
@@ -328,8 +329,12 @@ class Client(BaseClient):
             headers = {'User-Agent': 'pyoai'}
             if self._credentials is not None:
                 headers['Authorization'] = 'Basic ' + self._credentials.strip()
-            request = urllib2.Request(
-                self._base_url, data=urlencode(kw), headers=headers)
+            if self.get_method:
+                request = urllib2.Request(
+                        self._base_url+'?'+urlencode(kw), headers=headers)
+            else:
+                request = urllib2.Request(
+                    self._base_url, data=urlencode(kw), headers=headers)
             return retrieveFromUrlWaiting(request)
 
 def buildHeader(header_node, namespaces):
@@ -362,7 +367,8 @@ def retrieveFromUrlWaiting(request,
     for i in range(wait_max):
         try:
             print "Opening URL "+request.get_full_url()
-            print "Parameters: "+request.data
+            if request.data:
+                print "Parameters: "+request.data
             f = urllib2.urlopen(request)
             text = f.read()
             f.close()
