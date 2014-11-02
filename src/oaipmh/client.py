@@ -25,6 +25,7 @@ class BaseClient(common.OAIPMH):
         self._metadata_registry = (
             metadata_registry or metadata.global_metadata_registry)
         self._ignore_bad_character_hack = 0
+        self._fix_cairn_output_hack = True
         self._day_granularity = False
 
     def updateGranularity(self):
@@ -101,6 +102,8 @@ class BaseClient(common.OAIPMH):
             # also get rid of character code 12 	 
             xml = xml.replace(chr(12), '?')
             xml = xml.encode('UTF-8')
+        if self._fix_cairn_output_hack:
+            xml = xml.replace('<span styl</dc:title>', '</dc:title>')
         return etree.XML(xml)
 
     # implementation of the various methods, delegated here by
@@ -178,12 +181,10 @@ class BaseClient(common.OAIPMH):
         metadata_registry = self._metadata_registry
         metadata_prefix = args['metadataPrefix']
         def firstBatch():
-            print "firstbatch"
             return self.buildRecords(
                 metadata_prefix, namespaces,
                 metadata_registry, tree)
         def nextBatch(token):
-            print "nextbatch"
             tree = self.makeRequestErrorHandling(
                 verb='ListRecords',
                 resumptionToken=token)
