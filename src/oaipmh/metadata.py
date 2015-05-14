@@ -62,6 +62,7 @@ class MetadataReader(object):
         xpath_evaluator = etree.XPathEvaluator(element, 
                                                namespaces=self._namespaces)
         
+        map['element'] = element
         e = xpath_evaluator.evaluate
         # now extra field info according to xpath expr
         for field_name, (field_type, expr) in self._fields.items():
