@@ -376,12 +376,12 @@ def retrieveFromUrlWaiting(request,
             # we successfully opened without having to wait
             break
         except urllib2.HTTPError, e:
-            if e.code == 503:
+            if e.code >= 500:
                 try:
                     retryAfter = int(e.hdrs.get('Retry-After'))
                 except TypeError:
                     retryAfter = None
-                print "Caught 503 error. Retry after: "+str(retryAfter)
+                print "Caught 50* error. Retry after: "+str(retryAfter)
                 if retryAfter is None:
                     time.sleep(wait_default)
                 else:
