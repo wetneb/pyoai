@@ -397,6 +397,8 @@ def retrieveFromUrlWaiting(request,
             else:
                 # reraise any other HTTP error
                 raise
+        except urllib2.URLError, e:
+            time.sleep(wait_default)
     else:
         raise Error, "Waited too often (more than %s times)" % wait_max
     return text
