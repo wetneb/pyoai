@@ -9,6 +9,8 @@ from types import SliceType
 from lxml import etree
 import time
 import codecs
+import os
+import gzip
 
 from oaipmh import common, metadata, validation, error
 from oaipmh.datestamp import datestamp_to_datetime, datetime_to_datestamp
@@ -176,6 +178,12 @@ class BaseClient(common.OAIPMH):
 
         return metadataFormats
 
+    def ListRecordsFromFile(self, metadataPrefix, tree):
+        namespaces = self.getNamespaces()
+        metadata_registry = self._metadata_registry
+        return self.buildRecords(metadataPrefix, namespaces,
+                metadata_registry, tree)
+
     def ListRecords_impl(self, args, tree):
         namespaces = self.getNamespaces()
         metadata_registry = self._metadata_registry
@@ -276,6 +284,29 @@ class BaseClient(common.OAIPMH):
             # XXX setDescription nodes
             sets.append((setSpec, setName, None))
         return sets, token
+
+    def listRecordsByDir(self, dirname, metadataPrefix):
+        for dirpath, dirnames, filenames in os.walk(dirname):
+            for fname in filenames:
+                print fname
+                full_fname = os.path.join(dirpath, fname)
+                if fname.endswith('.gz'):
+                    f = gzip.open(full_fname, 'r')
+                else:
+                    f = open(full_fname, 'r')
+                tree = self.loadResponseFromFile(f)
+                f.close()
+                records, resumption = self.ListRecordsFromFile(metadataPrefix, tree)
+                for record in records:
+                    yield record
+
+    def loadResponseFromFile(self, fdesc):
+        xml = fdesc.read()
+        try:
+            tree = self.parse(xml)
+        except SyntaxError:
+            raise error.XMLSyntaxError(kw)
+        return tree
 
     def makeRequestErrorHandling(self, **kw):
         xml = self.makeRequest(**kw)
