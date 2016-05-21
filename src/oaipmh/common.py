@@ -3,7 +3,7 @@ import pkg_resources
 from oaipmh import error
 
 class Header(object):
-    def __init__(self, element, identifier, datestamp, setspec, deleted):
+    def __init__(self, element, identifier, datestamp, setspec, deleted, format=None):
         self._element = element
         # force identifier to be a string, it might be 
         # an lxml.etree._ElementStringResult...
@@ -14,6 +14,7 @@ class Header(object):
         self._datestamp = datestamp
         self._setspec = setspec
         self._deleted = deleted
+        self._format = format
 
     def element(self):
         return self._element
@@ -30,6 +31,9 @@ class Header(object):
     def isDeleted(self):
         return self._deleted
 
+    def format(self):
+        return self._format
+
 class Metadata(object):
     def __init__(self, element, map):
         self._element = element
@@ -45,6 +49,9 @@ class Metadata(object):
         return self._map[name]
 
     __getitem__ = getField
+
+    def keys(self):
+        return self._map.keys()
 
 class Identify(object):
     def __init__(self, repositoryName, baseURL, protocolVersion, adminEmails,

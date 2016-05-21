@@ -234,12 +234,13 @@ class BaseClient(common.OAIPMH):
             header_node = e('oai:header')[0]
             # create header
             header = buildHeader(header_node, namespaces)
+            format = header.format() or metadata_prefix
             # find metadata node
             metadata_list = e('oai:metadata')
             if metadata_list:
                 metadata_node = metadata_list[0]
                 # create metadata
-                metadata = metadata_registry.readMetadata(metadata_prefix,
+                metadata = metadata_registry.readMetadata(format,
                                                           metadata_node)
             else:
                 metadata = None
@@ -375,9 +376,10 @@ def buildHeader(header_node, namespaces):
     identifier = e('string(oai:identifier/text())')
     datestamp = datestamp_to_datetime(
         str(e('string(oai:datestamp/text())')))
+    format = e('string(oai:format/text())')
     setspec = [str(s) for s in e('oai:setSpec/text()')]
     deleted = e("@status = 'deleted'") 
-    return common.Header(header_node, identifier, datestamp, setspec, deleted)
+    return common.Header(header_node, identifier, datestamp, setspec, deleted, format)
 
 def ResumptionListGenerator(firstBatch, nextBatch):
     result, token = firstBatch()
