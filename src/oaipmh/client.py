@@ -233,8 +233,8 @@ class BaseClient(common.OAIPMH):
             # find header node
             header_node = e('oai:header')[0]
             # create header
-            header = buildHeader(header_node, namespaces)
-            format = header.format() or metadata_prefix
+            header = buildHeader(header_node, namespaces, metadata_prefix)
+            format = header.format()
             # find metadata node
             metadata_list = e('oai:metadata')
             if metadata_list:
@@ -370,13 +370,13 @@ class Client(BaseClient):
                     self._base_url, data=urlencode(kw), headers=headers)
             return retrieveFromUrlWaiting(request)
 
-def buildHeader(header_node, namespaces):
+def buildHeader(header_node, namespaces, metadata_prefix=None):
     e = etree.XPathEvaluator(header_node, 
                             namespaces=namespaces).evaluate
     identifier = e('string(oai:identifier/text())')
     datestamp = datestamp_to_datetime(
         str(e('string(oai:datestamp/text())')))
-    format = e('string(oai:format/text())')
+    format = e('string(oai:format/text())') or metadata_prefix
     setspec = [str(s) for s in e('oai:setSpec/text()')]
     deleted = e("@status = 'deleted'") 
     return common.Header(header_node, identifier, datestamp, setspec, deleted, format)
