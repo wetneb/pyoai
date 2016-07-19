@@ -364,7 +364,7 @@ class Client(BaseClient):
             if self._credentials is not None:
                 headers['Authorization'] = 'Basic ' + self._credentials.strip()
             kw = kw.copy()
-            kw.update(extra_parameters)
+            kw.update(self.extra_parameters)
             if self.get_method:
                 request = urllib2.Request(
                         self._base_url+'?'+urlencode(kw), headers=headers)
