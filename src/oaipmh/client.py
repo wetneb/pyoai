@@ -29,6 +29,7 @@ class BaseClient(common.OAIPMH):
         self._ignore_bad_character_hack = 0
         self._fix_cairn_output_hack = True
         self._day_granularity = False
+        self.extra_parameters = {}
 
     def updateGranularity(self):
         """Update the granularity setting dependent on that the server says.
@@ -362,6 +363,8 @@ class Client(BaseClient):
             headers = {'User-Agent': 'pyoai'}
             if self._credentials is not None:
                 headers['Authorization'] = 'Basic ' + self._credentials.strip()
+            kw = kw.copy()
+            kw.update(extra_parameters)
             if self.get_method:
                 request = urllib2.Request(
                         self._base_url+'?'+urlencode(kw), headers=headers)
