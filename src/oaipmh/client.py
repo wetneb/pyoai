@@ -403,9 +403,6 @@ def retrieveFromUrlWaiting(request,
     """
     for i in range(wait_max):
         try:
-            print "Opening URL "+request.get_full_url()
-            if request.data:
-                print "Parameters: "+request.data
             f = urllib2.urlopen(request)
             text = f.read()
             f.close()
