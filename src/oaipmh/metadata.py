@@ -130,6 +130,7 @@ base_dc_reader = MetadataReader(
     'collname':('textList', 'base_dc:dc/base_dc:collname/text()'),
     'continent':('textList', 'base_dc:dc/base_dc:continent/text()'),
     'country':('textList', 'base_dc:dc/base_dc:country/text()'),
+    'coverage':    ('textList', 'oai_dc:dc/dc:coverage/text()'),
     'lang':('textList', 'base_dc:dc/base_dc:lang/text()'),
     'link':('textList', 'base_dc:dc/base_dc:link/text()'),
     'oa':('textList', 'base_dc:dc/base_dc:oa/text()'),
