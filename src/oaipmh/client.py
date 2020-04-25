@@ -338,11 +338,11 @@ def buildHeader(header_node, namespaces):
 def ResumptionListGenerator(firstBatch, nextBatch):
     result, token = firstBatch()
     while 1:
-        itemFound = False
+        item_found = False
         for item in result:
             yield item
-            itemFound = True
-        if token is None or not itemFound:
+            item_found = True
+        if token is None or not item_found:
             break
         result, token = nextBatch(token)
 
